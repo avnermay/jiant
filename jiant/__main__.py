@@ -319,6 +319,7 @@ def evaluate_and_write(args, model, tasks, splits_to_write):
     results_tsv = os.path.join(args.exp_dir, "results.tsv")
     log.info("Writing results for split 'val' to %s", results_tsv)
     evaluate.write_results(val_results, results_tsv, run_name=run_name)
+    return val_results
 
 
 def initial_setup(args, cl_args):
@@ -589,6 +590,7 @@ def main(cl_arguments):
                 phase="target_train",
             )
 
+    results = {}
     if args.do_full_eval:
         log.info("Evaluating...")
         splits_to_write = evaluate.parse_write_preds_arg(args.write_preds)
@@ -600,13 +602,14 @@ def main(cl_arguments):
             ckpt_path = get_best_checkpoint_path(args, "eval", task_to_use)
             assert ckpt_path is not None
             load_model_state(model, ckpt_path, args.cuda, skip_task_models=[], strict=strict)
-            evaluate_and_write(args, model, [task], splits_to_write)
+            results[task] = evaluate_and_write(args, model, [task], splits_to_write)
 
     if args.delete_checkpoints_when_done and not args.keep_all_checkpoints:
         log.info("Deleting all checkpoints.")
         delete_all_checkpoints(args.run_dir)
 
     log.info("Done!")
+    return results
 
 
 if __name__ == "__main__":
