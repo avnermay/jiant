@@ -6,10 +6,10 @@ To debug this, run with -m ipdb:
 """
 # pylint: disable=no-member
 import logging as log
-
-log.basicConfig(
-    format="%(asctime)s: %(message)s", datefmt="%m/%d %I:%M:%S %p", level=log.INFO
-)  # noqa
+# Commented out by Avner May (9/19/19) because we already set up logging in smallfry repo
+# log.basicConfig(
+#     format="%(asctime)s: %(message)s", datefmt="%m/%d %I:%M:%S %p", level=log.INFO
+# )  # noqa
 import argparse
 import glob
 import io
@@ -602,7 +602,7 @@ def main(cl_arguments):
             ckpt_path = get_best_checkpoint_path(args, "eval", task_to_use)
             assert ckpt_path is not None
             load_model_state(model, ckpt_path, args.cuda, skip_task_models=[], strict=strict)
-            results[task] = evaluate_and_write(args, model, [task], splits_to_write)
+            results[task.name] = evaluate_and_write(args, model, [task], splits_to_write)
 
     if args.delete_checkpoints_when_done and not args.keep_all_checkpoints:
         log.info("Deleting all checkpoints.")
